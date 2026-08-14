@@ -24,16 +24,14 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build APK
-        run: gradle assembleDebug
-
-      - name: Find APK
         run: |
-          echo "Searching APK files..."
-          find . -name "*.apk" -type f -exec ls -lh {} \;
+          gradle assembleDebug
+          echo "=== APK FILES ==="
+          find . -type f -name "*.apk" -ls
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Homa-AI-debug-apk
           path: |
-            **/build/outputs/apk/**/*.apk
+            **/*.apk
