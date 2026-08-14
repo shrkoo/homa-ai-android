@@ -7,17 +7,20 @@ android {
     compileSdk 35
 
     defaultConfig {
-        applicationId "ai.homa.app"
+        applicationId 'ai.homa.app'
         minSdk 23
         targetSdk 35
         versionCode 1
-        versionName "1.0.0"
+        versionName '1.0'
     }
 
     buildTypes {
         release {
             minifyEnabled false
-            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+}
+
+dependencies {
 }
