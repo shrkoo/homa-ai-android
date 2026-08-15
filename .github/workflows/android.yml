@@ -25,6 +25,9 @@ jobs:
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > homa-ai-release.jks
 
       - name: Build AAB
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         run: gradle bundleRelease
 
       - name: Upload AAB
