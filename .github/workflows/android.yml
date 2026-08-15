@@ -24,14 +24,22 @@ jobs:
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > homa-ai-release.jks
 
-      - name: Build AAB
+      - name: Build AAB and APK
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-        run: gradle bundleRelease
+        run: |
+          gradle bundleRelease
+          gradle assembleRelease
 
       - name: Upload AAB
         uses: actions/upload-artifact@v4
         with:
           name: Homa-AI-release-aab
           path: app/build/outputs/bundle/release/*.aab
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Homa-AI-release-apk
+          path: app/build/outputs/apk/release/*.apk
