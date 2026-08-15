@@ -2,7 +2,6 @@ package ai.homa.app;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -16,11 +15,8 @@ public class MainActivity extends Activity {
 
         webView = new WebView(this);
 
-        WebSettings settings = webView.getSettings();
-        settings.setJavaScriptEnabled(true);
-        settings.setDomStorageEnabled(true);
-        settings.setDatabaseEnabled(true);
-
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setDomStorageEnabled(true);
         webView.setWebViewClient(new WebViewClient());
 
         webView.loadUrl("https://capable-aria-chat-flow.base44.app");
