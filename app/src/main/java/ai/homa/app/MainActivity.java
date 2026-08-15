@@ -17,6 +17,8 @@ public class MainActivity extends Activity {
 
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setDomStorageEnabled(true);
+        webView.getSettings().setDatabaseEnabled(true);
+
         webView.setWebViewClient(new WebViewClient());
 
         webView.loadUrl("https://capable-aria-chat-flow.base44.app");
