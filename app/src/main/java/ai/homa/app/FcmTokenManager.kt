@@ -96,7 +96,13 @@ object FcmTokenManager {
         }
     }
 
+    // Network calls must never run on the main thread (Firebase callbacks arrive there).
     private fun sendTokenToWorker(context: Context, fcmToken: String) {
+        val appContext = context.applicationContext
+        Thread { postTokenToWorker(appContext, fcmToken) }.start()
+    }
+
+    private fun postTokenToWorker(context: Context, fcmToken: String) {
         val authToken = prefs(context).getString(KEY_AUTH_TOKEN, null)
         val payload = JSONObject().apply {
             put("fcm_token", fcmToken)
@@ -122,9 +128,14 @@ object FcmTokenManager {
             os.close()
 
             val code = conn.responseCode
-            if (code in 200..299) {
+            val body = (if (code in 200..299) conn.inputStream else conn.errorStream)
+                ?.bufferedReader()?.use { it.readText() } ?: ""
+            // Only count it as sent when the Worker confirms the token was stored.
+            if (code in 200..299 && body.contains("registered")) {
                 prefs(context).edit().putLong(KEY_LAST_SENT, System.currentTimeMillis()).apply()
                 Log.d(TAG, "FCM token registered with Worker (HTTP $code)")
+            } else if (code in 200..299) {
+                Log.w(TAG, "Worker did not confirm FCM token: $body")
             } else {
                 Log.w(TAG, "Worker rejected FCM token (HTTP $code)")
             }
