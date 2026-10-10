@@ -90,13 +90,13 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
 
     // Google Play Billing (googleplay flavor only)
-    googleplayImplementation("com.android.billingclient:billing-ktx:7.1.1")
+    add("googleplayImplementation", "com.android.billingclient:billing-ktx:7.1.1")
 
     // Google Play In-App Review API (googleplay flavor only)
-    googleplayImplementation("com.google.android.play:review-ktx:2.0.2")
+    add("googleplayImplementation", "com.google.android.play:review-ktx:2.0.2")
 
     // Myket Payment SDK (myket flavor only)
-    myketImplementation("ir.myket:myketsdk:1.3.0")
+    add("myketImplementation", "ir.myket:myketsdk:1.3.0")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
