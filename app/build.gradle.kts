@@ -79,6 +79,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
     implementation("androidx.webkit:webkit:1.11.0")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    implementation("androidx.browser:browser:1.8.0")
 
     // Splash Screen (Android 12+)
     implementation("androidx.core:core-splashscreen:1.0.1")

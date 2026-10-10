@@ -44,7 +44,7 @@ class HomaWebChromeClient(
                 Intent(Intent.ACTION_GET_CONTENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
                     type = "image/*"
-                    putExtra(Intent.EXTRA_ALLOW_MULTIPLE, params?.mode == MODE_OPEN_MULTIPLE)
+                    putExtra(Intent.EXTRA_ALLOW_MULTIPLE, params?.mode == FileChooserParams.MODE_OPEN_MULTIPLE)
                 }
             } else {
                 Intent(Intent.ACTION_GET_CONTENT).apply {
@@ -63,7 +63,7 @@ class HomaWebChromeClient(
                         "application/vnd.openxmlformats-officedocument.presentationml.presentation",
                         "image/*"
                     ))
-                    putExtra(Intent.EXTRA_ALLOW_MULTIPLE, params?.mode == MODE_OPEN_MULTIPLE)
+                    putExtra(Intent.EXTRA_ALLOW_MULTIPLE, params?.mode == FileChooserParams.MODE_OPEN_MULTIPLE)
                 }
             }
 

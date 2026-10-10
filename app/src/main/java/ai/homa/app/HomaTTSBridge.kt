@@ -40,7 +40,7 @@ class HomaTTSBridge(
     @JavascriptInterface
     fun getLanguages(): String {
         return try {
-            val langs = tts?.engines?.flatMap { it.supportedLanguages?.toList() ?: emptyList() }?.distinct() ?: emptyList()
+            val langs = tts?.availableLanguages?.map { it.toLanguageTag() }?.distinct() ?: emptyList()
             "[" + langs.joinToString(",") { "\"${it}\"" } + "]"
         } catch (e: Exception) { "[]" }
     }
