@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Splash theme (Android 12+ system splash) -->
+    <style name="Theme.HomaAI.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/homa_splash_bg</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo</item>
+        <item name="windowSplashScreenAnimationDuration">300</item>
+        <item name="postSplashScreenTheme">@style/Theme.HomaAI</item>
+    </style>
+
+    <!-- Main app theme -->
+    <style name="Theme.HomaAI" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@color/homa_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:enforceStatusBarContrast" tools:targetApi="29" xmlns:tools="http://schemas.android.com/tools">false</item>
+        <item name="android:enforceNavigationBarContrast" tools:targetApi="29" xmlns:tools="http://schemas.android.com/tools">false</item>
+    </style>
+</resources>

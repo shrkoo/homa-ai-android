@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Splash screen logo (vector drawable) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <!-- Homa stylized "H" mark -->
+    <path
+        android:fillColor="#1A56DB"
+        android:pathData="M30,30 L30,90 L40,90 L40,65 L80,65 L80,90 L90,90 L90,30 L80,30 L80,55 L40,55 L40,30 Z" />
+    <path
+        android:fillColor="#3B82F6"
+        android:pathData="M55,75 m-8,0 a8,8 0 1,0 16,0 a8,8 0 1,0 -16,0"
+        android:fillAlpha="0.8" />
+</vector>
