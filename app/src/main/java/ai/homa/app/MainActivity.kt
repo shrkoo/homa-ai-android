@@ -255,7 +255,7 @@ class MainActivity : AppCompatActivity() {
             gravity = android.view.Gravity.CENTER
             setPadding(48, 48, 48, 48)
 
-            val textView = TextView(this).apply {
+            val textView = TextView(this@MainActivity).apply {
                 text = "اتصال اینترنت برقرار نیست.\nلطفاً اتصال خود را بررسی و دوباره تلاش کنید."
                 textSize = 16f
                 gravity = android.view.Gravity.CENTER
@@ -263,7 +263,7 @@ class MainActivity : AppCompatActivity() {
             }
             addView(textView)
 
-            val retryButton = android.widget.Button(this).apply {
+            val retryButton = android.widget.Button(this@MainActivity).apply {
                 text = "تلاش مجدد"
                 setOnClickListener {
                     offlineView.visibility = View.GONE

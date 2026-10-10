@@ -17,6 +17,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary = true }
+        buildConfigField("String", "WEB_APP_URL", "\"https://capable-aria-chat-flow.base44.app\"")
+        buildConfigField("String", "WORKER_API_URL", "\"https://homa-ai-core.shahramalidazeh6203.workers.dev\"")
     }
 
     buildTypes {
