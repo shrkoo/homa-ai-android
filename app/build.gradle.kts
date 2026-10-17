@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "ai.homa.app"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "ai.homa.app"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 6
         versionName = "1.4"
 
@@ -23,8 +23,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            isMinifyEnabled = false
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
