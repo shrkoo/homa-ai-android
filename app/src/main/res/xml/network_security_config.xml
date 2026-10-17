@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Block cleartext (HTTP) traffic entirely -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+
+    <!-- Allow only HTTPS for these domains -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">capable-aria-chat-flow.base44.app</domain>
+        <domain includeSubdomains="true">homa-ai-core.shahramalidazeh6203.workers.dev</domain>
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </domain-config>
+</network-security-config>

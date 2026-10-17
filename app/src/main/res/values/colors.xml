@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Homa AI brand colors -->
+    <color name="homa_primary">#1A56DB</color>
+    <color name="homa_primary_dark">#1648B5</color>
+    <color name="homa_background">#090B10</color>
+    <color name="homa_surface">#0F121A</color>
+    <color name="homa_white">#FFFFFF</color>
+    <color name="homa_black">#000000</color>
+    <color name="homa_splash_bg">#090B10</color>
+</resources>

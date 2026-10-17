@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">هُما AI</string>
+    <string name="app_name_en">Homa AI</string>
+
+    <!-- Notification channels -->
+    <string name="channel_general">پیام‌های هما</string>
+    <string name="channel_payment">پرداخت و اشتراک</string>
+    <string name="channel_reminder">یادآوری و هشدار</string>
+    <string name="channel_low">اطلاعیه‌ها</string>
+
+    <!-- Offline -->
+    <string name="offline_title">اتصال اینترنت برقرار نیست</string>
+    <string name="offline_message">لطفاً اتصال خود را بررسی و دوباره تلاش کنید.</string>
+    <string name="retry">تلاش مجدد</string>
+
+    <!-- File picker -->
+    <string name="file_chooser_title">انتخاب فایل</string>
+    <string name="image_chooser_title">انتخاب تصویر</string>
+
+    <!-- Billing -->
+    <string name="billing_error">خطا در پردازش پرداخت</string>
+    <string name="billing_cancelled">پرداخت لغو شد</string>
+</resources>
