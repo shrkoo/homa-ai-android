@@ -1,45 +1,39 @@
-name: Build Homa AI Release
+name: Build Homa AI Android
 
 on:
   workflow_dispatch:
+    inputs:
+      market:
+        description: 'Target market'
+        required: true
+        default: googleplay
+        type: choice
+        options: [googleplay, myket, bazaar]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up JDK
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: '17'
-
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - uses: gradle/actions/setup-gradle@v3
 
       - name: Create keystore
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > homa-ai-release.jks
 
-      - name: Build AAB and APK
+      - name: Build APK
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         run: |
-          gradle bundleRelease
-          gradle assembleRelease
-
-      - name: Upload AAB
-        uses: actions/upload-artifact@v4
-        with:
-          name: Homa-AI-release-aab
-          path: app/build/outputs/bundle/release/*.aab
+          cd /home/runner/work/homa-ai-android/homa-ai-android
+          ./gradlew assemble${{ inputs.market || 'googleplay' }}Release
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Homa-AI-release-apk
-          path: app/build/outputs/apk/release/*.apk
+          name: Homa-AI-${{ inputs.market || 'googleplay' }}-apk
+          path: app/build/outputs/apk/**/*.apk
