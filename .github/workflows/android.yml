@@ -28,9 +28,7 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-        run: |
-          cd /home/runner/work/homa-ai-android/homa-ai-android
-          ./gradlew assemble${{ inputs.market || 'googleplay' }}Release
+        run: gradle assemble${{ inputs.market || 'googleplay' }}Release
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
