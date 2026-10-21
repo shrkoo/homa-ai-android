@@ -56,6 +56,11 @@ android {
                     System.getenv("KEY_ALIAS") ?: "homa"
                 keyPassword =
                     System.getenv("KEY_PASSWORD") ?: ""
+
+                // Also emit the classic JAR (v1) signature alongside the modern ones
+                // so older store verification tools read the same certificate.
+                enableV1Signing = true
+                enableV2Signing = true
             }
         }
 
