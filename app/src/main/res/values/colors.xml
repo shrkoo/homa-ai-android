@@ -7,5 +7,5 @@
     <color name="homa_surface">#0F121A</color>
     <color name="homa_white">#FFFFFF</color>
     <color name="homa_black">#000000</color>
-    <color name="homa_splash_bg">#090B10</color>
+    <color name="homa_splash_bg">#000000</color>
 </resources>

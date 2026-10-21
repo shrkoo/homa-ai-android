@@ -158,6 +158,12 @@ class HomaWebInterface(
      * Returns the current Firebase Cloud Messaging token.
      */
     @JavascriptInterface
+    fun getNotificationStatus(): String = NotificationSettings.status(activity).toString()
+
+    @JavascriptInterface
+    fun connectNotifications() { activity.runOnUiThread { NotificationSettings.connect(activity) } }
+
+    @JavascriptInterface
     fun getFcmToken(): String {
         return FcmTokenManager.getFcmToken(activity) ?: ""
     }

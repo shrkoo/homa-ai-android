@@ -34,6 +34,7 @@ object FcmTokenManager {
      */
     fun setAuthToken(context: Context, token: String) {
         prefs(context).edit().putString(KEY_AUTH_TOKEN, token).apply()
+        MobileNotificationManager.activate(context)
         // If we have a cached FCM token, try sending it now
         val fcmToken = prefs(context).getString(KEY_FCM_TOKEN, null)
         if (fcmToken != null) {
@@ -44,8 +45,12 @@ object FcmTokenManager {
     /**
      * Clear the auth token (on logout).
      */
+    fun getAuthToken(context: Context): String? = prefs(context).getString(KEY_AUTH_TOKEN, null)
+
     fun clearAuthToken(context: Context) {
+        val token = getAuthToken(context)
         prefs(context).edit().remove(KEY_AUTH_TOKEN).apply()
+        MobileNotificationManager.deactivate(context, token)
     }
 
     /**
@@ -53,6 +58,8 @@ object FcmTokenManager {
      * Safe to call on every app resume — only sends if token changed or not yet sent.
      */
     fun fetchAndRegisterToken(context: Context) {
+        MobileNotificationManager.activate(context)
+        try {
         FirebaseMessaging.getInstance().token
             .addOnCompleteListener { task ->
                 if (!task.isSuccessful) {
@@ -63,6 +70,9 @@ object FcmTokenManager {
                 if (token.isNullOrEmpty()) return@addOnCompleteListener
                 onTokenRetrieved(context, token)
             }
+        } catch (_: Exception) {
+            Log.w(TAG, "FCM unavailable; background notifications remain configured")
+        }
     }
 
     /**
@@ -103,46 +113,15 @@ object FcmTokenManager {
     }
 
     private fun postTokenToWorker(context: Context, fcmToken: String) {
-        val authToken = prefs(context).getString(KEY_AUTH_TOKEN, null)
-        val payload = JSONObject().apply {
-            put("fcm_token", fcmToken)
-            put("platform", "android")
-        }.toString()
-
-        val url = URL("${BuildConfig.WORKER_API_URL}/resilient/payments/register")
-        val conn = (url.openConnection() as HttpURLConnection).apply {
-            requestMethod = "POST"
-            connectTimeout = 10000
-            readTimeout = 10000
-            setRequestProperty("Content-Type", "application/json")
-            if (!authToken.isNullOrEmpty()) {
-                setRequestProperty("X-User-Token", authToken)
-            }
-            doOutput = true
-        }
-
+        val authToken = getAuthToken(context) ?: return
+        if (authToken.isEmpty()) return
         try {
-            val os: OutputStream = conn.outputStream
-            os.write(payload.toByteArray(Charsets.UTF_8))
-            os.flush()
-            os.close()
-
-            val code = conn.responseCode
-            val body = (if (code in 200..299) conn.inputStream else conn.errorStream)
-                ?.bufferedReader()?.use { it.readText() } ?: ""
-            // Only count it as sent when the Worker confirms the token was stored.
-            if (code in 200..299 && body.contains("registered")) {
+            val result = MobileNotificationHttp.request(authToken, "register", JSONObject().put("fcm_token", fcmToken))
+            if (result.optString("status") == "registered") {
                 prefs(context).edit().putLong(KEY_LAST_SENT, System.currentTimeMillis()).apply()
-                Log.d(TAG, "FCM token registered with Worker (HTTP $code)")
-            } else if (code in 200..299) {
-                Log.w(TAG, "Worker did not confirm FCM token: $body")
-            } else {
-                Log.w(TAG, "Worker rejected FCM token (HTTP $code)")
             }
-        } catch (e: Exception) {
-            Log.w(TAG, "Failed to send FCM token to Worker", e)
-        } finally {
-            conn.disconnect()
+        } catch (_: Exception) {
+            Log.w(TAG, "Push registration pending; background polling is configured")
         }
     }
 }

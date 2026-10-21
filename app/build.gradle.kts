@@ -12,8 +12,8 @@ android {
         applicationId = "ai.homa.app"
         minSdk = 24
         targetSdk = 35
-        versionCode = 9
-        versionName = "2.0.2"
+        versionCode = 10
+        versionName = "2.0.3"
 
         testInstrumentationRunner =
             "androidx.test.runner.AndroidJUnitRunner"
@@ -130,6 +130,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.activity:activity-ktx:1.9.2")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
     implementation("androidx.webkit:webkit:1.11.0")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     implementation("androidx.browser:browser:1.8.0")

@@ -51,19 +51,19 @@ jobs:
           apksigner=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -1)
           "$apksigner" verify "$apk"
           jarsigner -verify "$aab"
-          cp "$apk" "release/homa-ai-2.0.2-$MARKET.apk"
-          cp "$aab" "release/homa-ai-2.0.2-$MARKET.aab"
+          cp "$apk" "release/homa-ai-2.0.3-$MARKET.apk"
+          cp "$aab" "release/homa-ai-2.0.3-$MARKET.aab"
       - uses: actions/upload-artifact@v4
         with:
-          name: Homa-AI-2.0.2-${{ inputs.market }}-signed
+          name: Homa-AI-2.0.3-${{ inputs.market }}-signed
           path: release/*
           if-no-files-found: error
       - name: Publish download files
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release view v2.0.2 >/dev/null 2>&1 || gh release create v2.0.2 --target "$GITHUB_SHA" --title "Homa AI 2.0.2" --notes "Signed APK and AAB; Independent authenticated chat, private uploads, and payment proof collection. Independent manual payment approval and alerts; safe space above Android navigation buttons."
-          gh release upload v2.0.2 release/* --clobber
+          gh release view v2.0.3 >/dev/null 2>&1 || gh release create v2.0.3 --target "$GITHUB_SHA" --title "Homa AI 2.0.3" --notes "Signed APK and AAB; Independent authenticated chat, private uploads, and payment proof collection. Black uploaded brand mark; payment alerts over Cloudflare with Android background polling fallback. Background polling is periodic, not immediate."
+          gh release upload v2.0.3 release/* --clobber
       - name: Remove signing key
         if: always()
         run: rm -f "$RUNNER_TEMP/homa-release.jks"

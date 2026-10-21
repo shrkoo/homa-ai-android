@@ -14,7 +14,7 @@ class HomaFirebaseMessagingService : FirebaseMessagingService() {
         val route = message.data["route"] ?: message.data["click_action"] ?: ""
 
         // Show notification with deep-link tap action
-        NotificationHelper.showNotification(this, title, body, channel, route)
+        MobileNotificationDelivery.show(this, message.data["alert_id"] ?: message.messageId ?: return, title, body, route, channel)
     }
 
     override fun onNewToken(token: String) {
