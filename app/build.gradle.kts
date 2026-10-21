@@ -12,12 +12,12 @@ android {
         applicationId = "ai.homa.app"
         minSdk = 24
         targetSdk = 35
-        versionCode = 7
-        versionName = "2.0.0"
+        versionCode = 8
+        versionName = "2.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary = true }
-        buildConfigField("String", "WEB_APP_URL", "\"https://capable-aria-chat-flow.base44.app\"")
+        buildConfigField("String", "WEB_APP_URL", "\"https://homa-ai-independent.pages.dev\"")
         buildConfigField("String", "WORKER_API_URL", "\"https://homa-ai-core.shahramalidazeh6203.workers.dev\"")
     }
 

@@ -16,6 +16,7 @@ class HomaWebViewClient(private val context: Context) : WebViewClient() {
         // Only these domains are allowed in WebView
         private val ALLOWED_DOMAINS = setOf(
             "capable-aria-chat-flow.base44.app",
+            "homa-ai-independent.pages.dev",
             "homa-ai-core.shahramalidazeh6203.workers.dev"
         )
     }
