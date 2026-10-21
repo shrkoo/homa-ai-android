@@ -37,7 +37,9 @@ jobs:
           KEYSTORE_PATH: ${{ runner.temp }}/homa-release.jks
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-        run: bash scripts/verify-release-signing.sh keystore
+        run: |
+          bash -n scripts/verify-release-signing.sh
+          bash scripts/verify-release-signing.sh keystore
       - name: Build signed APK and AAB
         env:
           KEYSTORE_PATH: ${{ runner.temp }}/homa-release.jks
