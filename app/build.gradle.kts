@@ -46,16 +46,19 @@ android {
             )
 
             signingConfig = signingConfigs.create("release") {
-                storeFile = file(
-                    System.getenv("KEYSTORE_PATH")
-                        ?: "keystore/homa-release.jks"
-                )
-                storePassword =
-                    System.getenv("KEYSTORE_PASSWORD") ?: ""
-                keyAlias =
-                    System.getenv("KEY_ALIAS") ?: "homa"
-                keyPassword =
-                    System.getenv("KEY_PASSWORD") ?: ""
+                // Release builds must use the existing repository signing secrets.
+                // Debug builds remain usable without release credentials.
+                val values = listOf("KEYSTORE_PATH", "KEYSTORE_PASSWORD", "KEY_ALIAS", "KEY_PASSWORD")
+                    .associateWith { System.getenv(it).orEmpty() }
+                if (gradle.startParameter.taskNames.any { it.contains("release", ignoreCase = true) }) {
+                    require(values.values.none { it.isBlank() }) {
+                        "Release signing requires the existing repository keystore and credentials; no fallback key is allowed."
+                    }
+                }
+                storeFile = values.getValue("KEYSTORE_PATH").takeIf { it.isNotBlank() }?.let { file(it) }
+                storePassword = values.getValue("KEYSTORE_PASSWORD")
+                keyAlias = values.getValue("KEY_ALIAS")
+                keyPassword = values.getValue("KEY_PASSWORD")
 
                 // Also emit the classic JAR (v1) signature alongside the modern ones
                 // so older store verification tools read the same certificate.

@@ -27,8 +27,17 @@ jobs:
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
         run: |
+          set -euo pipefail
+          umask 077
           test -n "$KEYSTORE_BASE64"
           printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/homa-release.jks"
+          test -s "$RUNNER_TEMP/homa-release.jks"
+      - name: Enforce pinned signing certificate before build
+        env:
+          KEYSTORE_PATH: ${{ runner.temp }}/homa-release.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        run: bash scripts/verify-release-signing.sh keystore
       - name: Build signed APK and AAB
         env:
           KEYSTORE_PATH: ${{ runner.temp }}/homa-release.jks
@@ -48,9 +57,7 @@ jobs:
           apk=$(find app/build/outputs/apk -name '*release.apk' -print -quit)
           aab=$(find app/build/outputs/bundle -name '*.aab' -print -quit)
           test -n "$apk" && test -n "$aab"
-          apksigner=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -1)
-          "$apksigner" verify "$apk"
-          jarsigner -verify "$aab"
+          bash scripts/verify-release-signing.sh artifacts "$apk" "$aab"
           cp "$apk" "release/homa-ai-2.0.3-$MARKET.apk"
           cp "$aab" "release/homa-ai-2.0.3-$MARKET.aab"
       - uses: actions/upload-artifact@v4
@@ -66,4 +73,4 @@ jobs:
           gh release upload v2.0.3 release/* --clobber
       - name: Remove signing key
         if: always()
-        run: rm -f "$RUNNER_TEMP/homa-release.jks"
+        run: rm -f "$RUNNER_TEMP/homa-release.jks" "$RUNNER_TEMP/homa-release-certificate.der"
