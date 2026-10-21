@@ -28,8 +28,10 @@ case "${1:-}" in
     test -s "$apk"; test -s "$aab"
     apksigner=$(find "${ANDROID_HOME:?}/build-tools" -name apksigner | sort -V | tail -1)
     apk_report=$("$apksigner" verify --verbose --print-certs "$apk")
-    check_fingerprint "$(printf '%s\n' "$apk_report" | awk -F': ' '/^Signer #1 certificate SHA-256 digest:/ { print $2 }')"
-    printf '%s\n' "$apk_report" | grep -q '^Number of signers: 1$'
+    printf '%s\n' "$apk_report"
+    # Newer Android tools label signers by SDK range rather than signer number.
+    apk_fingerprints=$(printf '%s\n' "$apk_report" | awk '/certificate SHA-256 digest:/ { print $NF }' | sort -u)
+    check_fingerprint "$apk_fingerprints"
     printf '%s\n' "$apk_report" | grep -q '^Verified using v1 scheme .*: true$'
     printf '%s\n' "$apk_report" | grep -q '^Verified using v2 scheme .*: true$'
     jarsigner -verify "$aab"
