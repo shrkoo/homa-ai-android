@@ -15,7 +15,8 @@ android {
         versionCode = 8
         versionName = "2.0.1"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner =
+            "androidx.test.runner.AndroidJUnitRunner"
 
         vectorDrawables {
             useSupportLibrary = true
@@ -49,9 +50,12 @@ android {
                     System.getenv("KEYSTORE_PATH")
                         ?: "keystore/homa-release.jks"
                 )
-                storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
-                keyAlias = System.getenv("KEY_ALIAS") ?: "homa"
-                keyPassword = System.getenv("KEY_PASSWORD") ?: ""
+                storePassword =
+                    System.getenv("KEYSTORE_PASSWORD") ?: ""
+                keyAlias =
+                    System.getenv("KEY_ALIAS") ?: "homa"
+                keyPassword =
+                    System.getenv("KEY_PASSWORD") ?: ""
             }
         }
 
@@ -66,17 +70,37 @@ android {
     productFlavors {
         create("googleplay") {
             dimension = "market"
-            buildConfigField("String", "MARKET", "\"googleplay\"")
+
+            buildConfigField(
+                "String",
+                "MARKET",
+                "\"googleplay\""
+            )
         }
 
         create("myket") {
             dimension = "market"
-            buildConfigField("String", "MARKET", "\"myket\"")
+
+            buildConfigField(
+                "String",
+                "MARKET",
+                "\"myket\""
+            )
+
+            manifestPlaceholders["marketApplicationId"] = "ir.myket"
+            manifestPlaceholders["marketBindAddress"] = "ir.myket"
+            manifestPlaceholders["marketPermission"] =
+                "ir.myket.permission.PAYMENT"
         }
 
         create("bazaar") {
             dimension = "market"
-            buildConfigField("String", "MARKET", "\"bazaar\"")
+
+            buildConfigField(
+                "String",
+                "MARKET",
+                "\"bazaar\""
+            )
         }
     }
 
@@ -114,27 +138,43 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.0.1")
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.3.0"))
+    implementation(
+        platform("com.google.firebase:firebase-bom:33.3.0")
+    )
     implementation("com.google.firebase:firebase-messaging")
     implementation("com.google.firebase:firebase-analytics")
 
     // Google Play Billing
-    add("googleplayImplementation", "com.android.billingclient:billing-ktx:7.1.1")
+    add(
+        "googleplayImplementation",
+        "com.android.billingclient:billing-ktx:7.1.1"
+    )
 
     // Google Play In-App Review
-    add("googleplayImplementation", "com.google.android.play:review-ktx:2.0.2")
+    add(
+        "googleplayImplementation",
+        "com.google.android.play:review-ktx:2.0.2"
+    )
 
-    // Myket Payment SDK
+    // Myket Billing SDK
     add(
         "myketImplementation",
         "com.github.myketstore:myket-billing-client:1.3"
     )
 
     // Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    implementation(
+        "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1"
+    )
 
     // Testing
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+
+    androidTestImplementation(
+        "androidx.test.ext:junit:1.2.1"
+    )
+
+    androidTestImplementation(
+        "androidx.test.espresso:espresso-core:3.6.1"
+    )
 }
