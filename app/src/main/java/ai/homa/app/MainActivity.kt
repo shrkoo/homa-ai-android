@@ -31,6 +31,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var offlineView: LinearLayout
     private lateinit var webInterface: HomaWebInterface
     private lateinit var webViewClient: HomaWebViewClient
+    private var uploadChromeClient: HomaWebChromeClient? = null
+    private val webUploadLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        uploadChromeClient?.handleFileChooserResult(result.resultCode, result.data)
+    }
     private var voiceBridge: HomaVoiceBridge? = null
     private var ttsBridge: HomaTTSBridge? = null
 
@@ -207,7 +211,8 @@ class MainActivity : AppCompatActivity() {
         webView.webViewClient = webViewClient
 
         // Chrome client — handles file upload dialogs, JS alerts, progress
-        webView.webChromeClient = HomaWebChromeClient(this, swipeRefresh)
+        uploadChromeClient = HomaWebChromeClient(this, swipeRefresh) { chooser -> webUploadLauncher.launch(chooser) }
+        webView.webChromeClient = uploadChromeClient
     }
 
     private fun loadHomaApp() {
