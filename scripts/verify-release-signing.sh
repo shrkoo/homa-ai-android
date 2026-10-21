@@ -32,8 +32,35 @@ case "${1:-}" in
     # Newer Android tools label signers by SDK range rather than signer number.
     apk_fingerprints=$(printf '%s\n' "$apk_report" | awk '/certificate SHA-256 digest:/ { print $NF }' | sort -u)
     check_fingerprint "$apk_fingerprints"
-    printf '%s\n' "$apk_report" | grep -q '^Verified using v1 scheme .*: true$'
-    printf '%s\n' "$apk_report" | grep -q '^Verified using v2 scheme .*: true$'
+    printf '%s\n' "$apk_report" | grep -q '^Verified using v2 scheme .*: true
+    jarsigner -verify "$aab"
+    aab_report=$(keytool -J-Duser.language=en -J-Duser.country=US -printcert -jarfile "$aab")
+    check_fingerprint "$(printf '%s\n' "$aab_report" | awk '/SHA256:/ { print $2; exit }')"
+    if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
+      printf '### Signing identity verified\n- APK and AAB match the pinned repository key: `%s`\n- APK signatures: V1 and V2 verified\n' "$expected" >> "$GITHUB_STEP_SUMMARY"
+    fi
+    ;;
+  *) echo "Usage: $0 keystore | artifacts APK AAB" >&2; exit 2 ;;
+esac
+echo "Pinned release signing identity verified: $expected"
+
+    # Android 24+ skips JAR verification when V2 exists; explicitly verify
+    # the legacy signature independently without changing the app minSdk.
+    v1_report=$("$apksigner" verify --min-sdk-version 23 --max-sdk-version 23 --verbose --print-certs "$apk")
+    printf '%s\n' "$v1_report"
+    check_fingerprint "$(printf '%s\n' "$v1_report" | awk '/certificate SHA-256 digest:/ { print $NF }' | sort -u)"
+    printf '%s\n' "$v1_report" | grep -q '^Verified using v1 scheme .*: true
+    jarsigner -verify "$aab"
+    aab_report=$(keytool -J-Duser.language=en -J-Duser.country=US -printcert -jarfile "$aab")
+    check_fingerprint "$(printf '%s\n' "$aab_report" | awk '/SHA256:/ { print $2; exit }')"
+    if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
+      printf '### Signing identity verified\n- APK and AAB match the pinned repository key: `%s`\n- APK signatures: V1 and V2 verified\n' "$expected" >> "$GITHUB_STEP_SUMMARY"
+    fi
+    ;;
+  *) echo "Usage: $0 keystore | artifacts APK AAB" >&2; exit 2 ;;
+esac
+echo "Pinned release signing identity verified: $expected"
+
     jarsigner -verify "$aab"
     aab_report=$(keytool -J-Duser.language=en -J-Duser.country=US -printcert -jarfile "$aab")
     check_fingerprint "$(printf '%s\n' "$aab_report" | awk '/SHA256:/ { print $2; exit }')"
