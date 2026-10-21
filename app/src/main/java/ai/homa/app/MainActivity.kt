@@ -103,6 +103,15 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(root)
 
+        // Keep all app content above system buttons and the on-screen keyboard.
+        ViewCompat.setOnApplyWindowInsetsListener(root) { view, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            val keyboard = insets.getInsets(WindowInsetsCompat.Type.ime())
+            view.setPadding(bars.left, bars.top, bars.right, maxOf(bars.bottom, keyboard.bottom))
+            WindowInsetsCompat.CONSUMED
+        }
+        ViewCompat.requestApplyInsets(root)
+
         // Configure WebView
         configureWebView()
 
@@ -238,14 +247,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleDeepLink(intent: Intent?) {
         intent?.data?.let { uri ->
-            // Security: validate that deep link does not target admin routes.
-            // Check both host and path — e.g. "homa://admin-panel/users" has
-            // host="admin-panel" and path="/users", so we must check the full route.
-            val fullRoute = (uri.host ?: "") + (uri.path ?: "")
-            if (fullRoute.contains("/admin") || fullRoute.contains("admin-panel") || fullRoute.contains("/admin")) {
-                // Block deep links to admin — require in-app authorization
-                intent.data = null
-            }
+            // Route authorization remains in the web app; allow payment notification links.
+            val trustedHost = Uri.parse(BuildConfig.WEB_APP_URL).host
+            if (uri.scheme != "homa" && !(uri.scheme == "https" && uri.host == trustedHost)) intent.data = null
         }
     }
 

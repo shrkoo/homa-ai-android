@@ -109,7 +109,7 @@ object FcmTokenManager {
             put("platform", "android")
         }.toString()
 
-        val url = URL("${BuildConfig.WORKER_API_URL}/notifications/register")
+        val url = URL("${BuildConfig.WORKER_API_URL}/resilient/payments/register")
         val conn = (url.openConnection() as HttpURLConnection).apply {
             requestMethod = "POST"
             connectTimeout = 10000
