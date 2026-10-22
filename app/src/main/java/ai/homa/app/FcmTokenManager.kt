@@ -90,6 +90,23 @@ object FcmTokenManager {
         return prefs(context).getString(KEY_FCM_TOKEN, null)
     }
 
+    /** Explicit reconnect must replace a stale Firebase token, not re-send it. */
+    fun renewRegistration(context: Context) {
+        val appContext = context.applicationContext
+        try {
+            FirebaseMessaging.getInstance().deleteToken().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    prefs(appContext).edit().remove(KEY_FCM_TOKEN).remove(KEY_LAST_SENT).apply()
+                } else {
+                    Log.w(TAG, "Push token renewal pending")
+                }
+                fetchAndRegisterToken(appContext)
+            }
+        } catch (_: Exception) {
+            Log.w(TAG, "FCM unavailable; background notifications remain configured")
+        }
+    }
+
     // ── Internal ──
 
     private fun onTokenRetrieved(context: Context, token: String) {

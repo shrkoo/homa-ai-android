@@ -16,7 +16,7 @@ object MobileNotificationManager {
         val network = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
         manager.enqueueUniquePeriodicWork("homa-payment-periodic", ExistingPeriodicWorkPolicy.KEEP,
             PeriodicWorkRequestBuilder<PaymentPollWorker>(15, TimeUnit.MINUTES).setConstraints(network).build())
-        manager.enqueueUniqueWork("homa-payment-now", ExistingWorkPolicy.REPLACE,
+        manager.enqueueUniqueWork("homa-payment-now", ExistingWorkPolicy.KEEP,
             OneTimeWorkRequestBuilder<PaymentPollWorker>().setConstraints(network).build())
     }
     fun deactivate(context: Context, token: String?) {

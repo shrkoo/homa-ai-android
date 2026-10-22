@@ -164,6 +164,11 @@ class HomaWebInterface(
     fun connectNotifications() { activity.runOnUiThread { NotificationSettings.connect(activity) } }
 
     @JavascriptInterface
+    fun syncPaymentNotifications() {
+        MobileNotificationManager.activate(activity.applicationContext)
+    }
+
+    @JavascriptInterface
     fun getFcmToken(): String {
         return FcmTokenManager.getFcmToken(activity) ?: ""
     }
