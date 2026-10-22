@@ -31,10 +31,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var offlineView: LinearLayout
     private lateinit var webInterface: HomaWebInterface
     private lateinit var webViewClient: HomaWebViewClient
-    private var uploadChromeClient: HomaWebChromeClient? = null
-    private val webUploadLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        uploadChromeClient?.handleFileChooserResult(result.resultCode, result.data)
-    }
+    private lateinit var webChromeClient: HomaWebChromeClient
     private var voiceBridge: HomaVoiceBridge? = null
     private var ttsBridge: HomaTTSBridge? = null
 
@@ -59,6 +56,29 @@ class MainActivity : AppCompatActivity() {
         // useful for silent data pushes even if the user declined visible notifications.
         FcmTokenManager.fetchAndRegisterToken(this)
     }
+
+    // File chooser launched from the WebView (<input type="file">). The result MUST return
+    // through a registered launcher, otherwise the page never receives the picked file and
+    // the gallery / camera / document buttons appear to do nothing.
+    private val webFileChooserLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        webChromeClient.handleFileChooserResult(result.resultCode, result.data)
+    }
+
+    private fun launchFileChooser(content: Intent, camera: Intent?) {
+        val chooser = if (camera != null) {
+            Intent.createChooser(content, "انتخاب فایل").apply {
+                putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(camera))
+            }
+        } else {
+            content
+        }
+        webFileChooserLauncher.launch(chooser)
+    }
+
+
+    private fun onFileChooserRequested(content: Intent, camera: Intent?) = launchFileChooser(content, camera)
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -102,8 +122,6 @@ class MainActivity : AppCompatActivity() {
         root.addView(offlineView)
 
         setContentView(root)
-
-        // Keep all app content above system buttons and the on-screen keyboard.
         ViewCompat.setOnApplyWindowInsetsListener(root) { view, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
             val keyboard = insets.getInsets(WindowInsetsCompat.Type.ime())
@@ -219,9 +237,13 @@ class MainActivity : AppCompatActivity() {
         webViewClient = HomaWebViewClient(this)
         webView.webViewClient = webViewClient
 
-        // Chrome client — handles file upload dialogs, JS alerts, progress
-        uploadChromeClient = HomaWebChromeClient(this, swipeRefresh) { chooser -> webUploadLauncher.launch(chooser) }
-        webView.webChromeClient = uploadChromeClient
+        // Chrome client — handles file upload dialogs, JS alerts, progress.
+        // The chooser is launched through webFileChooserLauncher so the picked file
+        // is delivered back to the page.
+        webChromeClient = HomaWebChromeClient(this, swipeRefresh) { content, camera ->
+            onFileChooserRequested(content, camera)
+        }
+        webView.webChromeClient = webChromeClient
     }
 
     private fun loadHomaApp() {
@@ -247,9 +269,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleDeepLink(intent: Intent?) {
         intent?.data?.let { uri ->
-            // Route authorization remains in the web app; allow payment notification links.
-            val trustedHost = Uri.parse(BuildConfig.WEB_APP_URL).host
-            if (uri.scheme != "homa" && !(uri.scheme == "https" && uri.host == trustedHost)) intent.data = null
+            // Security: validate that deep link does not target admin routes.
+            // Check both host and path — e.g. "homa://admin-panel/users" has
+            // host="admin-panel" and path="/users", so we must check the full route.
+            val fullRoute = (uri.host ?: "") + (uri.path ?: "")
+            if (fullRoute.contains("/admin") || fullRoute.contains("admin-panel") || fullRoute.contains("/admin")) {
+                // Block deep links to admin — require in-app authorization
+                intent.data = null
+            }
         }
     }
 

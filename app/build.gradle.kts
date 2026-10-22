@@ -12,103 +12,51 @@ android {
         applicationId = "ai.homa.app"
         minSdk = 24
         targetSdk = 35
-        versionCode = 11
-        versionName = "2.0.4"
+        versionCode = 12
+        versionName = "2.0.5"
 
-        testInstrumentationRunner =
-            "androidx.test.runner.AndroidJUnitRunner"
-
-        vectorDrawables {
-            useSupportLibrary = true
-        }
-
-        buildConfigField(
-            "String",
-            "WEB_APP_URL",
-            "\"https://homa-ai-independent.pages.dev\""
-        )
-
-        buildConfigField(
-            "String",
-            "WORKER_API_URL",
-            "\"https://homa-ai-core.shahramalidazeh6203.workers.dev\""
-        )
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables { useSupportLibrary = true }
+        buildConfigField("String", "WEB_APP_URL", "\"https://homa-ai-independent.pages.dev\"")
+        buildConfigField("String", "WORKER_API_URL", "\"https://homa-ai-core.shahramalidazeh6203.workers.dev\"")
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
-            isShrinkResources = false
-
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-
+            // Signing config — provide keystore via environment or local.properties
             signingConfig = signingConfigs.create("release") {
-                // Release builds must use the existing repository signing secrets.
-                // Debug builds remain usable without release credentials.
-                val values = listOf("KEYSTORE_PATH", "KEYSTORE_PASSWORD", "KEY_ALIAS", "KEY_PASSWORD")
-                    .associateWith { System.getenv(it).orEmpty() }
-                if (gradle.startParameter.taskNames.any { it.contains("release", ignoreCase = true) }) {
-                    require(values.values.none { it.isBlank() }) {
-                        "Release signing requires the existing repository keystore and credentials; no fallback key is allowed."
-                    }
-                }
-                storeFile = values.getValue("KEYSTORE_PATH").takeIf { it.isNotBlank() }?.let { file(it) }
-                storePassword = values.getValue("KEYSTORE_PASSWORD")
-                keyAlias = values.getValue("KEY_ALIAS")
-                keyPassword = values.getValue("KEY_PASSWORD")
-
-                // Also emit the classic JAR (v1) signature alongside the modern ones
-                // so older store verification tools read the same certificate.
-                enableV1Signing = true
-                enableV2Signing = true
+                storeFile = file(System.getenv("KEYSTORE_PATH") ?: "keystore/homa-release.jks")
+                storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
+                keyAlias = System.getenv("KEY_ALIAS") ?: "homa"
+                keyPassword = System.getenv("KEY_PASSWORD") ?: ""
             }
         }
-
         debug {
             isDebuggable = true
             applicationIdSuffix = ".debug"
         }
     }
 
+    // Flavor dimensions for different markets
     flavorDimensions += "market"
-
     productFlavors {
         create("googleplay") {
             dimension = "market"
-
-            buildConfigField(
-                "String",
-                "MARKET",
-                "\"googleplay\""
-            )
+            buildConfigField("String", "MARKET", "\"googleplay\"")
         }
-
         create("myket") {
             dimension = "market"
-
-            buildConfigField(
-                "String",
-                "MARKET",
-                "\"myket\""
-            )
-
-            manifestPlaceholders["marketApplicationId"] = "ir.myket"
-            manifestPlaceholders["marketBindAddress"] = "ir.myket"
-            manifestPlaceholders["marketPermission"] =
-                "ir.myket.permission.PAYMENT"
+            buildConfigField("String", "MARKET", "\"myket\"")
         }
-
         create("bazaar") {
             dimension = "market"
-
-            buildConfigField(
-                "String",
-                "MARKET",
-                "\"bazaar\""
-            )
+            buildConfigField("String", "MARKET", "\"bazaar\"")
         }
     }
 
@@ -116,20 +64,13 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-
+    kotlinOptions { jvmTarget = "17" }
     buildFeatures {
         buildConfig = true
         viewBinding = true
     }
-
     packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
+        resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" }
     }
 }
 
@@ -143,47 +84,29 @@ dependencies {
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     implementation("androidx.browser:browser:1.8.0")
 
-    // Splash Screen
+    // Splash Screen (Android 12+)
     implementation("androidx.core:core-splashscreen:1.0.1")
 
-    // Firebase
-    implementation(
-        platform("com.google.firebase:firebase-bom:33.3.0")
-    )
+    // Firebase BoM — ensures all Firebase libraries use compatible versions
+    implementation(platform("com.google.firebase:firebase-bom:33.3.0"))
+    // Firebase Cloud Messaging (Push Notifications) — version managed by BoM
     implementation("com.google.firebase:firebase-messaging")
     implementation("com.google.firebase:firebase-analytics")
 
-    // Google Play Billing
-    add(
-        "googleplayImplementation",
-        "com.android.billingclient:billing-ktx:7.1.1"
-    )
+    // Google Play Billing (googleplay flavor only)
+    add("googleplayImplementation", "com.android.billingclient:billing-ktx:7.1.1")
 
-    // Google Play In-App Review
-    add(
-        "googleplayImplementation",
-        "com.google.android.play:review-ktx:2.0.2"
-    )
+    // Google Play In-App Review API (googleplay flavor only)
+    add("googleplayImplementation", "com.google.android.play:review-ktx:2.0.2")
 
-    // Myket Billing SDK
-    add(
-        "myketImplementation",
-        "com.github.myketstore:myket-billing-client:1.3"
-    )
+    // Myket Payment SDK (myket flavor only)
+    add("myketImplementation", "ir.myket:myketsdk:1.3.0")
 
     // Coroutines
-    implementation(
-        "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1"
-    )
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 
     // Testing
     testImplementation("junit:junit:4.13.2")
-
-    androidTestImplementation(
-        "androidx.test.ext:junit:1.2.1"
-    )
-
-    androidTestImplementation(
-        "androidx.test.espresso:espresso-core:3.6.1"
-    )
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 }

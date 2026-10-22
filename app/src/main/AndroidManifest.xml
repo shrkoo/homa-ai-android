@@ -9,9 +9,6 @@
     <!-- Notifications (Android 13+) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!-- Camera (for image capture, if user chooses camera in file picker) -->
-    <uses-permission android:name="android.permission.CAMERA" />
-
     <!-- Microphone for voice input (speech-to-text) -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!-- Camera not required if device doesn't have one -->
@@ -26,6 +23,18 @@
 
     <!-- Receive boot completed (for alarm persistence) -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- Package visibility: the system file picker and any camera app must be resolvable (Android 11+) -->
+    <queries>
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.GET_CONTENT" />
+            <category android:name="android.intent.category.OPENABLE" />
+            <data android:mimeType="*/*" />
+        </intent>
+    </queries>
 
     <application
         android:name=".HomaApplication"
